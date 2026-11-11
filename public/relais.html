@@ -182,7 +182,12 @@ function genLevel(n){
     else{fill(x++,top);fill(x++,top);fill(x++,top-ri(1,2));fill(x++,top);fill(x++,top);}
   }
   for(;x<len;x++)fill(x,top);
-  if(!cp)cp={x:Math.floor(len/2)*T,top:startTop};
+  if(!cp){ // aucun plat après la moitié : on cherche une colonne solide et sûre près du milieu
+    for(let d=0;d<len/2&&!cp;d++)for(const c of[Math.floor(len/2)+d,Math.floor(len/2)-d]){
+      if(c<2||c>=len-3)continue;const t=g[c].indexOf(1);
+      if(t>0&&g[c][t-1]===0&&g[c+1][t]===1&&g[c+1][t-1]===0){cp={x:c*T+6,top:t};break;}}
+    if(!cp)cp={x:2*T+6,top:startTop};
+  }
   return{g,len,startTop,cp,flagX:(len-4)*T+10,flagTop:top};
 }
 // ---------- univers maritime : chaque niveau = une étape d'un projet de construction navale ----------
@@ -206,7 +211,12 @@ function setLevel(n){level=n;L=genLevel(n);cpReached=false;spawn();target=null;}
 
 // ---------- personnage ----------
 const P={x:0,y:0,vx:0,vy:0,w:20,h:26,onGround:false,coyote:0,jumpBuf:0,face:1,dead:0};
-function spawn(){const s=(cpReached&&L.cp)?L.cp:{x:2*T+6,top:L.startTop};P.x=s.x;P.y=s.top*T-P.h;P.vx=0;P.vy=0;P.dead=0;P.onGround=false;}
+// sécurité : on réapparaît toujours sur un sol réel (jamais au-dessus du vide ni d'un pique)
+function safeSpot(x){const cx=Math.floor(x/T);
+  for(let d=0;d<L.len;d++)for(const c of[cx-d,cx+d]){if(c<0||c>=L.len)continue;const col=L.g[c];const t=col.findIndex(v=>v!==0);
+    if(t>0&&col[t]===1&&col[t-1]===0)return{x:c*T+6,top:t};}
+  return{x:2*T+6,top:L.startTop};}
+function spawn(){const s=safeSpot(((cpReached&&L.cp)?L.cp:{x:2*T+6}).x);P.x=s.x;P.y=s.top*T-P.h;P.vx=0;P.vy=0;P.dead=0;P.onGround=false;}
 spawn();
 const ACC=0.6,MAXV=3.2,FRIC=0.75,GRAV=0.5,JUMP=-10,MAXFALL=11;
 function collideX(){const ys=[P.y+1,P.y+P.h/2,P.y+P.h-1];
