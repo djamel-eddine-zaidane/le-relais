@@ -141,7 +141,7 @@ function handle(c, msg) {
       levelStartedAt = Date.now();
       lastState = null;
       broadcast({ t: 'level', level: world.level, by: { name: c.name, flag: c.flag } });
-      pushChat({ win: true, text: `🏁 ${c.flag} ${c.name} termine le niveau ${world.level - 1} !` });
+      pushChat({ win: true, text: `🏁 ${c.flag} ${c.name} valide l'étape ${world.level - 1} !` });
       break;
     }
     case 'chat': {

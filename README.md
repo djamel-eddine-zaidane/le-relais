@@ -1,8 +1,21 @@
 # MS MPM
 
-Une seule personne au monde joue à la fois. Tout le monde regarde.
-Chacun a 60 secondes pour faire avancer le personnage, puis passe la main.
-Objectif commun : terminer 1 000 000 de niveaux.
+**Management de Projets Maritimes**, en relais mondial.
+
+Un seul chef de chantier au monde joue à la fois. Tout le monde regarde.
+Chacun a 60 secondes pour faire avancer le projet, puis passe la main.
+Objectif commun : valider 1 000 000 d'étapes.
+
+## L'univers
+
+- Chaque niveau est une **étape d'un projet de construction navale** : étude de faisabilité, conception, achat de l'acier, découpe, assemblage des blocs, construction en cale, mise à l'eau, armement, essais en mer, livraison.
+- Toutes les 10 étapes, un **navire est livré** (porte-conteneurs, ferry, méthanier…).
+- Chaque étape peut subir un **aléa** :
+  - 🌊 Tempête : le vent repousse le chef de chantier.
+  - 🌫️ Brouillard : visibilité réduite.
+  - 🌙 Travail de nuit.
+  - 📋 Inspection de la classification : pas de jalon intermédiaire, il faut tout faire d'une traite.
+- Les plots orange sont les obstacles du chantier ; tomber dans le bassin renvoie au dernier jalon.
 
 ## Ce qu'il y a dans le projet
 
