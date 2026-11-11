@@ -8,6 +8,9 @@
 :root{--bg:#0e1120;--panel:#171b2e;--line:#272d4a;--txt:#e9ebf7;--mut:#8a90b2;--acc:#ffcc33;--you:#4ade80;--bad:#f87171}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+nav{display:flex;gap:6px;padding:8px 12px 0;max-width:1120px;margin:0 auto;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line)}
+nav a.on{color:#111;background:var(--acc);border-color:var(--acc);font-weight:700}
 .wrap{max-width:1120px;margin:0 auto;padding:12px;display:grid;grid-template-columns:1fr 300px;gap:12px}
 @media (max-width:840px){.wrap{grid-template-columns:1fr;padding:8px}}
 header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -68,6 +71,7 @@ input[type=text]{flex:1}
 </style>
 </head>
 <body>
+<nav><a href="/" class="on">🏗️ Le Relais</a><a href="/projet">📊 Le Chantier</a><a href="/formation">🎓 Formation</a></nav>
 <div class="wrap">
   <header>
     <div>

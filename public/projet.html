@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MS MPM · Le Chantier</title>
+<style>
+:root{--bg:#0e1120;--panel:#171b2e;--line:#272d4a;--txt:#e9ebf7;--mut:#8a90b2;--acc:#ffcc33;--you:#4ade80;--bad:#f87171;--blue:#60a5fa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+nav{display:flex;gap:6px;padding:8px 12px;max-width:1120px;margin:0 auto;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line)}
+nav a.on{color:#111;background:var(--acc);border-color:var(--acc);font-weight:700}
+.wrap{max-width:1120px;margin:0 auto;padding:0 12px 12px;display:grid;grid-template-columns:1fr 300px;gap:12px}
+@media (max-width:840px){.wrap{grid-template-columns:1fr;padding:0 8px 8px}}
+header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-size:20px;margin:0}
+h1 b{color:var(--acc)}
+.sub{color:var(--mut);font-size:12px}
+.stats{display:flex;gap:14px;font-size:13px;color:var(--mut);align-items:center}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:4px}
+.dot.on{background:var(--you)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.hud{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:14px}
+.hud .who{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud .t{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:18px}
+.bar{height:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);width:0}
+main{overflow:hidden;position:relative}
+.body{padding:12px;display:grid;gap:12px}
+.ship{font-size:17px;font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#11152a;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.kpi .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .s{font-size:11px;color:var(--mut)}
+.kpi.bad .v{color:var(--bad)}
+.kpi.good .v{color:var(--you)}
+h2{font-size:13px;margin:0 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.ph{display:grid;grid-template-columns:110px 1fr 46px;gap:8px;align-items:center;font-size:13px;margin-bottom:6px}
+.ph .track{height:14px;background:#11152a;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.ph .track i{display:block;height:100%;background:var(--blue);transition:width .4s}
+.ph.cur .track i{background:var(--acc)}
+.ph.done .track i{background:var(--you)}
+.ph .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.team{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:14px;border-bottom:1px dashed var(--line)}
+.team:last-of-type{border-bottom:0}
+.team .nm{flex:1}
+.team .nm small{display:block;color:var(--mut);font-size:11px}
+.team .n{width:22px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.team.hot .nm{color:var(--acc)}
+.sq{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#20253d;color:var(--txt);font-size:18px;cursor:pointer}
+.sq:disabled,.act:disabled{opacity:.35;cursor:default}
+.tot{font-size:12px;color:var(--mut);margin-top:6px}
+.act{display:flex;width:100%;justify-content:space-between;align-items:center;gap:8px;background:#20253d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;font-size:14px;cursor:pointer;margin-bottom:8px;text-align:left}
+.act small{color:var(--mut);font-size:11px}
+.act.on{background:var(--acc);color:#111;border-color:var(--acc)}
+.act.on small{color:#333}
+.event{border:2px solid var(--acc);border-radius:12px;padding:12px;background:#1f1d14}
+.event .tt{font-weight:800;font-size:16px}
+.event p{margin:6px 0 10px;font-size:14px;color:#d6d3c4}
+.event .ch{display:grid;gap:8px}
+.event .ch button{background:#2b2717;border:1px solid #6b5a1f;color:var(--txt);border-radius:10px;padding:10px;font-size:14px;cursor:pointer;text-align:left}
+.event .ch button:disabled{opacity:.6;cursor:default}
+.event .age{font-size:12px;color:var(--mut);margin-top:8px}
+.noevent{font-size:13px;color:var(--mut);padding:10px;border:1px dashed var(--line);border-radius:12px}
+#log{font-size:13px;line-height:1.5;max-height:170px;overflow-y:auto}
+#log div{padding:2px 0;border-bottom:1px dashed var(--line)}
+#log span{color:var(--mut);font-variant-numeric:tabular-nums;margin-right:6px}
+#banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;background:rgba(10,12,24,.8);opacity:0;transition:opacity .25s;padding:10px;z-index:5}
+#banner.on{opacity:1}
+#banner .big{font-size:clamp(22px,5vw,40px);font-weight:800}
+#banner .small{color:var(--mut);margin-top:6px;font-size:14px}
+.watch{font-size:13px;color:var(--mut);text-align:center;padding:4px 0 0}
+aside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sec{padding:10px 12px}
+.row{display:flex;gap:8px}
+input[type=text],select{min-width:0;background:#0f1324;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:14px}
+input[type=text]{flex:1}
+.btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:#20253d;color:var(--txt)}
+#queue{list-style:none;margin:6px 0 0;padding:0;font-size:14px}
+#queue li{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+#queue li:last-child{border-bottom:0}
+#queue li .n{color:var(--mut);width:18px;text-align:right}
+#queue li.now{color:var(--acc);font-weight:700}
+#queue li.you{color:var(--you);font-weight:700}
+#qinfo{font-size:13px;margin-top:8px;color:var(--you);min-height:18px}
+#chat{height:200px;overflow-y:auto;font-size:13px;line-height:1.4;padding-right:4px}
+.msg{padding:2px 0;word-wrap:break-word}
+.msg .u{font-weight:700;margin-right:4px}
+.msg.sys{color:var(--mut);font-style:italic}
+.msg.win{color:var(--acc);font-weight:700}
+.msg.me .u{color:var(--you)}
+.reacts{display:flex;gap:6px;margin-top:8px}
+.reacts button{flex:1;background:#20253d;border:1px solid var(--line);border-radius:8px;font-size:18px;padding:4px;cursor:pointer}
+.float{position:fixed;bottom:20px;font-size:26px;pointer-events:none;animation:up 2.2s ease-out forwards;z-index:9}
+@keyframes up{to{transform:translateY(-240px) scale(1.3);opacity:0}}
+#hist{font-size:13px}
+#hist div{display:flex;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px dashed var(--line)}
+#hist b{color:var(--acc)}
+</style>
+</head>
+<body>
+<nav><a href="/">🏗️ Le Relais</a><a href="/projet" class="on">📊 Le Chantier</a><a href="/formation">🎓 Formation</a></nav>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>MS <b>MPM</b> · Le Chantier</h1>
+      <div class="sub">Un seul chef de projet au monde. 60 secondes (= 12 semaines) pour piloter. Le suivant hérite de tes décisions.</div>
+    </div>
+    <div class="stats"><span><span class="dot" id="conn"></span><span id="connTxt">Connexion…</span></span><span>👀 <strong id="sViewers">0</strong></span></div>
+  </header>
+
+  <main class="card">
+    <div id="banner"><div class="big" id="bBig"></div><div class="small" id="bSmall"></div></div>
+    <div class="hud"><span>🎮</span><span class="who" id="who">Personne ne pilote</span><span class="t" id="timer">–</span></div>
+    <div class="bar"><i id="tbar"></i></div>
+    <div class="body">
+      <div><div class="ship" id="ship">…</div><div class="sub">Objectif : livrer avant la semaine <span id="dl">40</span>, sans dépasser 120 M€, avec la meilleure qualité possible.</div></div>
+      <div class="kpis">
+        <div class="kpi" id="kWeek"><div class="l">Semaine</div><div class="v" id="vWeek">0</div><div class="s" id="sWeek"></div></div>
+        <div class="kpi" id="kBud"><div class="l">Budget restant</div><div class="v" id="vBud">120</div><div class="s" id="sBud"></div></div>
+        <div class="kpi" id="kQual"><div class="l">Qualité</div><div class="v" id="vQual">80</div><div class="s">contrôles, conformité</div></div>
+        <div class="kpi" id="kMor"><div class="l">Moral</div><div class="v" id="vMor">80</div><div class="s">productivité, sécurité</div></div>
+      </div>
+      <div><h2>Planning</h2><div id="phases"></div></div>
+      <div id="eventBox"></div>
+      <div class="cols">
+        <div><h2>Équipes</h2><div id="teams"></div><div class="tot" id="tot"></div></div>
+        <div><h2>Actions</h2>
+          <button class="act" id="aOT"><span>⏰ Heures supplémentaires<br><small>+40 % de vitesse, +50 % de coût, moral et qualité en baisse</small></span><b id="otState">OFF</b></button>
+          <button class="act" id="aAudit"><span>🔎 Audit qualité<br><small>−2 M€, qualité +8</small></span><b id="auditState"></b></button>
+          <button class="act" id="aTrain"><span>🦺 Formation sécurité<br><small>−1,5 M€, moral +10</small></span><b id="trainState"></b></button>
+        </div>
+      </div>
+      <div class="watch" id="watch"></div>
+      <div><h2>Journal du projet</h2><div id="log"></div></div>
+    </div>
+  </main>
+
+  <aside>
+    <div class="card sec">
+      <h2>File d'attente</h2>
+      <div class="row"><select id="flag" aria-label="Pays"></select><input type="text" id="pseudo" maxlength="16" placeholder="Ton pseudo"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="join" style="flex:1">Faire la queue</button><button class="btn ghost" id="leave" style="display:none">Quitter</button></div>
+      <div id="qinfo"></div>
+      <ul id="queue"></ul>
+    </div>
+    <div class="card sec"><h2>Navires livrés</h2><div id="hist"><span class="sub">Aucun pour l'instant. À vous de jouer !</span></div></div>
+    <div class="card sec">
+      <h2>Chat</h2>
+      <div id="chat"></div>
+      <form class="row" id="chatForm" style="margin-top:8px"><input type="text" id="chatIn" maxlength="120" placeholder="Conseille le chef de projet…"><button class="btn ghost" type="submit">↵</button></form>
+      <div class="reacts"><button data-e="👏">👏</button><button data-e="😂">😂</button><button data-e="😱">😱</button><button data-e="❤️">❤️</button><button data-e="🔥">🔥</button></div>
+    </div>
+  </aside>
+</div>
+<script>
+(()=>{
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fr=(n,d=0)=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:d,minimumFractionDigits:d});
+const PHASES=['Conception','Achats','Construction','Essais en mer'];
+const TEAMS=[['ing','Ingénierie','fait avancer la conception'],['ach','Achats','fait avancer les achats'],['prod','Production','fait avancer la construction'],['qhse','Qualité / HSE','essais, qualité, sécurité']];
+const REL=['ing','ach','prod','qhse'];
+let myId=null,turn=null,queue={list:[],ids:[],total:0},turnMs=60000,P=null,history=[],connected=false;
+const isMe=()=>turn&&turn.id===myId;
+const playing=()=>isMe()&&performance.now()>=turn.playAt&&performance.now()<turn.endsAt;
+
+// ---------- réseau ----------
+let ws=null,retry=0;
+function send(m){if(ws&&ws.readyState===1)ws.send(JSON.stringify(m));}
+function connect(){
+  const proto=location.protocol==='https:'?'wss':'ws';
+  try{ws=new WebSocket(`${proto}://${location.host}/ws/projet`);}catch(e){setConn(false);return;}
+  ws.onopen=()=>{retry=0;setConn(true);sendHello();};
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}onMsg(m);};
+  ws.onclose=()=>{setConn(false);setTimeout(connect,Math.min(10000,1000*2**retry++));};
+}
+function setConn(on){connected=on;$('conn').classList.toggle('on',on);$('connTxt').textContent=on?'En ligne':'Hors ligne';renderQueue();}
+function sendHello(){send({t:'hello',name:myName(),flag:$('flag').value});}
+function setTurn(t){
+  const wasMe=isMe();
+  if(t){const now=performance.now();turn={id:t.id,name:t.name,flag:t.flag,playAt:now+t.playIn,endsAt:now+t.endsIn,total:t.total};}else turn=null;
+  if(isMe())banner('À TOI DE PILOTER !','12 semaines de projet. Le monde entier te regarde 👀');
+  else if(wasMe)banner('Merci, chef !','Ton tour est fini. Le suivant hérite de tes décisions.');
+  else if(turn)banner(`${turn.flag} ${turn.name} prend la direction du projet`,'Prêt ?');
+  render();renderQueue();
+}
+function onMsg(m){
+  switch(m.t){
+    case 'init':myId=m.you;turnMs=m.turnMs;$('sViewers').textContent=fr(m.viewers);queue=m.queue;P=m.p;history=m.history;$('chat').innerHTML='';m.chat.forEach(addChat);setTurn(m.turn);renderHist();break;
+    case 'turn':if(m.p)P=m.p;setTurn(m.turn);break;
+    case 'queue':queue=m.q;renderQueue();break;
+    case 'projet':P=m.p;render();break;
+    case 'delivered':history=m.history;renderHist();banner(`🚢 ${m.rec.ship} livré !`,`${m.rec.weeks} semaines · ${fr(m.rec.budget,1)} M€ restants · qualité ${m.rec.quality} · score ${fr(m.rec.score)}`);for(let i=0;i<8;i++)setTimeout(()=>floatEmoji(['🎉','👏','🚢'][i%3]),i*150);break;
+    case 'chat':addChat(m.m);break;
+    case 'react':floatEmoji(m.e);break;
+    case 'viewers':$('sViewers').textContent=fr(m.n);break;
+  }
+}
+
+// ---------- rendu ----------
+function render(){
+  if(!P)return;
+  const can=playing();
+  $('ship').textContent=`🚢 ${P.ship}`;$('dl').textContent=P.deadline;
+  $('vWeek').textContent=P.week;$('sWeek').textContent=P.week>P.deadline?`${P.week-P.deadline} sem. de retard`:`échéance : sem. ${P.deadline}`;
+  $('kWeek').className='kpi'+(P.week>P.deadline?' bad':'');
+  $('vBud').textContent=fr(P.budget,1)+' M€';$('kBud').className='kpi'+(P.budget<0?' bad':P.budget>40?' good':'');
+  const nT=Object.values(P.teams).reduce((a,b)=>a+b,0);const burn=nT*0.4*(P.overtime?1.5:1);
+  $('sBud').textContent=`dépense : ${fr(burn,1)} M€ / sem.`;
+  $('vQual').textContent=Math.round(P.quality);$('kQual').className='kpi'+(P.quality<60?' bad':P.quality>=85?' good':'');
+  $('vMor').textContent=Math.round(P.morale);$('kMor').className='kpi'+(P.morale<40?' bad':P.morale>=85?' good':'');
+  const cur=P.phases.findIndex(v=>v<100);
+  $('phases').innerHTML=PHASES.map((n,i)=>`<div class="ph ${P.phases[i]>=100?'done':i===cur?'cur':''}"><span>${i===cur?'▶ ':''}${n}</span><div class="track"><i style="width:${P.phases[i]}%"></i></div><span class="pct">${Math.floor(P.phases[i])} %</span></div>`).join('');
+  $('teams').innerHTML=TEAMS.map(([k,n,d])=>`<div class="team ${REL[cur]===k?'hot':''}"><span class="nm">${n}<small>${d}${REL[cur]===k?' · phase en cours':''}</small></span><button class="sq" data-t="${k}" data-d="-1" ${can&&P.teams[k]>0?'':'disabled'}>−</button><span class="n">${P.teams[k]}</span><button class="sq" data-t="${k}" data-d="1" ${can&&nT<8&&P.teams[k]<5?'':'disabled'}>+</button></div>`).join('');
+  $('tot').textContent=`${nT} / 8 équipes mobilisées · 0,4 M€ par équipe et par semaine`;
+  $('aOT').disabled=!can;$('aOT').classList.toggle('on',P.overtime);$('otState').textContent=P.overtime?'ON':'OFF';
+  $('aAudit').disabled=!can||P.auditCd>0;$('auditState').textContent=P.auditCd>0?`${P.auditCd} sem.`:'';
+  $('aTrain').disabled=!can||P.trainCd>0;$('trainState').textContent=P.trainCd>0?`${P.trainCd} sem.`:'';
+  if(P.event){const left=4-P.event.age;
+    $('eventBox').innerHTML=`<div class="event"><div class="tt">${esc(P.event.title)}</div><p>${esc(P.event.text)}</p><div class="ch">${P.event.options.map((o,i)=>`<button data-c="${i}" ${can?'':'disabled'}>${esc(o)}</button>`).join('')}</div><div class="age">⚖️ Sans décision, l'option 2 s'appliquera d'office dans ${left} semaine${left>1?'s':''}.</div></div>`;}
+  else $('eventBox').innerHTML='<div class="noevent">✅ Aucun aléa en attente de décision.</div>';
+  $('log').innerHTML=P.log.map(l=>`<div><span>S${l.w}</span>${esc(l.text)}</div>`).join('');
+  $('watch').textContent=isMe()?(can?'':'Prépare-toi…'):turn?`Tu regardes ${turn.name} piloter. Fais la queue pour prendre la main.`:'Personne ne pilote : le projet est à l\'arrêt. Fais la queue !';
+}
+function renderHist(){if(!history.length)return;$('hist').innerHTML=history.map(h=>`<div><span>🚢 ${esc(h.ship)}<br><span class="sub">${h.weeks} sem.${h.late?` (${h.late} de retard)`:''} · ${fr(h.budget,1)} M€ · qualité ${h.quality}</span></span><b>${fr(h.score)}</b></div>`).join('');}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-t]');if(t&&!t.disabled){send({t:'act',a:'team',team:t.dataset.t,d:+t.dataset.d});return;}
+  const c=e.target.closest('[data-c]');if(c&&!c.disabled){send({t:'act',a:'event',choice:+c.dataset.c});return;}
+});
+$('aOT').onclick=()=>send({t:'act',a:'overtime'});
+$('aAudit').onclick=()=>send({t:'act',a:'audit'});
+$('aTrain').onclick=()=>send({t:'act',a:'train'});
+
+// ---------- file d'attente ----------
+const FLAGS=['🌍','🇫🇷','🇩🇿','🇲🇦','🇹🇳','🇧🇪','🇨🇭','🇨🇦','🇸🇳','🇨🇮','🇨🇲','🇲🇱','🇪🇸','🇮🇹','🇵🇹','🇩🇪','🇬🇧','🇮🇪','🇺🇸','🇧🇷','🇦🇷','🇲🇽','🇯🇵','🇰🇷','🇨🇳','🇮🇳','🇹🇷','🇪🇬','🇳🇬','🇬🇭','🇸🇪','🇳🇱','🇵🇱','🇷🇴','🇱🇧','🇸🇦','🇦🇺'];
+FLAGS.forEach(f=>{const o=document.createElement('option');o.value=o.textContent=f;$('flag').appendChild(o);});
+$('flag').value=store.get('relais_flag','🌍');$('pseudo').value=store.get('relais_pseudo','');
+const myName=()=>($('pseudo').value.trim()||'Anonyme').slice(0,16);
+$('join').onclick=()=>{store.set('relais_pseudo',$('pseudo').value.trim());store.set('relais_flag',$('flag').value);sendHello();send({t:'join'});};
+$('leave').onclick=()=>send({t:'leave'});
+function renderQueue(){
+  const ul=$('queue');ul.innerHTML='';
+  if(turn){const li=document.createElement('li');li.className='now'+(isMe()?' you':'');li.innerHTML=`<span class="n">▶</span><span>${esc(turn.flag)} ${esc(turn.name)}${isMe()?' (toi)':''}</span>`;ul.appendChild(li);}
+  queue.list.forEach((p,i)=>{const e=document.createElement('li');if(p.id===myId)e.className='you';e.innerHTML=`<span class="n">${i+1}</span><span>${esc(p.flag)} ${esc(p.name)}${p.id===myId?' (toi)':''}</span>`;ul.appendChild(e);});
+  const pos=queue.ids.indexOf(myId);
+  if(isMe())$('qinfo').textContent='À toi de piloter !';
+  else if(pos>=0){const rem=turn?Math.max(0,turn.endsAt-performance.now()):0;const w=(rem+pos*(turnMs+3000))/1000;$('qinfo').textContent=`Ta position : ${pos+1} · environ ${w<60?Math.ceil(w)+' s':Math.ceil(w/60)+' min'} d'attente`;}
+  else $('qinfo').textContent=turn?'':'Personne ne pilote. Lance-toi !';
+  const inQ=pos>=0||isMe();$('join').disabled=inQ||!connected;$('leave').style.display=inQ?'':'none';$('leave').textContent=isMe()?'Passer la main':'Quitter';
+}
+
+// ---------- chat ----------
+function addMsg(html,cls){const c=$('chat');const stick=c.scrollTop+c.clientHeight>=c.scrollHeight-30;const d=document.createElement('div');d.className='msg '+(cls||'');d.innerHTML=html;c.appendChild(d);while(c.children.length>100)c.firstChild.remove();if(stick)c.scrollTop=c.scrollHeight;}
+function addChat(m){if(m.sys)addMsg(esc(m.text),'sys');else if(m.win)addMsg(esc(m.text),'win');else addMsg(`<span class="u">${esc(m.flag)} ${esc(m.name)}</span>${esc(m.text)}`,m.id===myId?'me':'');}
+$('chatForm').onsubmit=e=>{e.preventDefault();const t=$('chatIn').value.trim();if(!t)return;sendHello();send({t:'chat',text:t});$('chatIn').value='';};
+function floatEmoji(e){const s=document.createElement('span');s.className='float';s.textContent=e;s.style.left=(5+Math.random()*88)+'%';document.body.appendChild(s);setTimeout(()=>s.remove(),2300);}
+document.querySelectorAll('.reacts button').forEach(b=>b.onclick=()=>send({t:'react',e:b.dataset.e}));
+let bannerTimer=null;
+function banner(big,small){$('bBig').textContent=big;$('bSmall').textContent=small;$('banner').classList.add('on');clearTimeout(bannerTimer);bannerTimer=setTimeout(()=>$('banner').classList.remove('on'),2600);}
+
+// ---------- horloge ----------
+let wasPlaying=false;
+setInterval(()=>{
+  const now=performance.now();
+  if(turn){
+    $('who').textContent=`${turn.flag} ${turn.name}${isMe()?' (toi)':''}`;
+    const t=Math.max(0,Math.ceil((turn.endsAt-now)/1000));
+    $('timer').textContent=now<turn.playAt?'Prêt…':`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+    $('timer').style.color=t<=10?'var(--bad)':'';
+    $('tbar').style.width=(now<turn.playAt?100:Math.max(0,Math.min(100,(turn.endsAt-now)/turn.total*100)))+'%';
+    $('tbar').style.background=isMe()?'var(--you)':'var(--acc)';
+  }else{$('who').textContent='Personne ne pilote';$('timer').textContent='–';$('tbar').style.width='0%';}
+  const p=playing();if(p!==wasPlaying){wasPlaying=p;render();}
+  renderQueue();
+},250);
+connect();
+})();
+</script>
+</body>
+</html>
