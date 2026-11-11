@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MS MPM · Formation</title>
+<style>
+:root{--bg:#0e1120;--panel:#171b2e;--line:#272d4a;--txt:#e9ebf7;--mut:#8a90b2;--acc:#ffcc33;--you:#4ade80;--bad:#f87171;--blue:#60a5fa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{display:flex;gap:6px;padding:8px 12px;max-width:900px;margin:0 auto;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line)}
+nav a.on{color:#111;background:var(--acc);border-color:var(--acc);font-weight:700}
+.wrap{max-width:900px;margin:0 auto;padding:0 12px 24px}
+h1{font-size:22px;margin:6px 0 4px}
+h1 b{color:var(--acc)}
+.sub{color:var(--mut);font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+@media (max-width:720px){.scen{grid-template-columns:1fr}}
+.scen button{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--txt);text-align:left;cursor:pointer;font-size:14px;line-height:1.45}
+.scen button:hover{border-color:var(--acc)}
+.scen .ic{font-size:34px}
+.scen .tt{font-weight:800;font-size:16px;margin:6px 0 4px}
+.scen .best{color:var(--you);font-size:12px;margin-top:8px}
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2}
+@media (max-width:600px){.gauges{grid-template-columns:repeat(2,1fr)}}
+.g{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.g .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.g .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.g .tr{height:6px;background:#11152a;border-radius:3px;overflow:hidden;margin-top:4px}
+.g .tr i{display:block;height:100%;transition:width .5s,background .5s}
+.g .dl{font-size:12px;font-weight:700;margin-left:6px}
+.step{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.sit{font-size:18px;font-weight:800;margin:6px 0}
+.ctx{font-size:15px;line-height:1.55;color:#d3d6ea}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opts button{background:#20253d;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--txt);text-align:left;font-size:15px;line-height:1.45;cursor:pointer}
+.opts button:hover:not(:disabled){border-color:var(--acc)}
+.opts button:disabled{cursor:default;opacity:.55}
+.opts button.pick{opacity:1;border-color:var(--acc);background:#2a2717}
+.opts button.best{opacity:1;border-color:var(--you)}
+.fb{margin-top:14px;border-left:4px solid var(--acc);background:#1b1f35;border-radius:8px;padding:12px 14px;font-size:15px;line-height:1.55}
+.fb.good{border-color:var(--you)}
+.fb .tag{display:inline-block;font-size:12px;background:#2b3157;color:#c7d2fe;border-radius:6px;padding:2px 8px;margin-bottom:6px}
+.eff{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;font-size:13px;font-weight:700}
+.pos{color:var(--you)}.neg{color:var(--bad)}
+.btn{background:var(--acc);color:#111;border:0;border-radius:10px;padding:10px 16px;font-weight:800;font-size:15px;cursor:pointer;margin-top:14px}
+.btn.ghost{background:#20253d;color:var(--txt);border:1px solid var(--line)}
+.grade{font-size:44px;font-weight:900;color:var(--acc)}
+.deb{margin-top:10px}
+.deb div{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;line-height:1.5}
+.deb .ok{color:var(--you)}.deb .ko{color:var(--bad)}
+.tip{font-size:13px;color:var(--mut);margin-top:8px}
+</style>
+</head>
+<body>
+<nav><a href="/">🏗️ Le Relais</a><a href="/projet">📊 Le Chantier</a><a href="/formation" class="on">🎓 Formation</a></nav>
+<div class="wrap" id="app"></div>
+<script>
+(()=>{
+// Chaque option : texte, effets {b:budget, d:délai, q:qualité, s:sécurité & environnement}, best (meilleure pratique), retour pédagogique.
+const SCENARIOS=[
+{ id:'navire', icon:'🚢', title:'Construire un navire', pitch:'Un porte-conteneurs feeder de 1 800 EVP pour un armateur européen. Budget serré, 24 mois pour livrer.',
+  steps:[
+  { title:'Avant de signer le contrat', concept:'Périmètre et spécification',
+    ctx:'L\'armateur est pressé de signer. La spécification technique ne fait que 20 pages. Que fais-tu ?',
+    opts:[
+      {t:'Prendre 3 semaines pour rédiger une spécification détaillée, validée point par point avec l\'armateur.',e:{b:5,d:-5,q:15,s:5},best:true,fb:'Un périmètre clair évite les avenants et les litiges. Les modifications coûtent d\'autant plus cher qu\'elles arrivent tard dans le projet : quelques semaines de cadrage en économisent des mois.'},
+      {t:'Signer tout de suite sur la base de la spécification sommaire pour gagner du temps.',e:{b:-15,d:5,q:-10,s:0},fb:'Le gain de temps est illusoire : chaque point flou deviendra une discussion, puis un avenant. Les dérives de coût viennent souvent d\'un périmètre mal défini au départ.'},
+      {t:'Reprendre les plans d\'un navire déjà construit par le chantier, sans adaptation.',e:{b:5,d:5,q:-10,s:-5},fb:'Réutiliser un design éprouvé est une bonne idée, mais sans l\'adapter au besoin de l\'armateur (routes, ports, réglementation) on livre le mauvais navire.'}]},
+  { title:'Le moteur principal', concept:'Chemin critique et équipements à long délai',
+    ctx:'Le motoriste annonce 12 mois de fabrication pour le moteur principal. La conception détaillée du navire n\'est pas terminée.',
+    opts:[
+      {t:'Commander le moteur dès la signature du contrat, sur la base de la puissance définie en avant-projet.',e:{b:-3,d:15,q:5,s:0},best:true,fb:'Les équipements à long délai (moteur, hélice, grues, systèmes de propulsion) sont sur le chemin critique. On les commande tôt, quitte à figer certaines hypothèses plus vite.'},
+      {t:'Attendre la fin de la conception détaillée pour être sûr de la puissance exacte.',e:{b:0,d:-15,q:5,s:0},fb:'La précision ne compense pas le retard : le moteur arrivera après la coque, et tout le chantier attendra. Sur le chemin critique, chaque semaine perdue décale la livraison.'},
+      {t:'Prendre un moteur disponible en stock, plus puissant que nécessaire.',e:{b:-5,d:5,q:0,s:-10},fb:'Un moteur surdimensionné consomme plus et émet plus, ce qui pèse sur l\'exploitation et sur les indices d\'efficacité énergétique exigés par l\'OMI.'}]},
+  { title:'Réglementation environnementale', concept:'Conformité réglementaire (MARPOL)',
+    ctx:'Le navire naviguera en Manche et en mer du Nord, une zone de contrôle des émissions de soufre (ECA).',
+    opts:[
+      {t:'Concevoir dès maintenant pour respecter la limite ECA de 0,10 % de soufre (carburant adapté ou épurateur).',e:{b:-5,d:0,q:5,s:15},best:true,fb:'L\'annexe VI de MARPOL fixe 0,50 % de soufre dans le monde depuis 2020, et 0,10 % dans les zones ECA. Intégrer la conformité en conception coûte bien moins cher qu\'une modification après livraison.'},
+      {t:'Se contenter de la limite mondiale de 0,50 %.',e:{b:3,d:0,q:-5,s:-20},fb:'Le navire ne serait pas conforme dans sa zone d\'exploitation. Il faudrait le modifier après livraison, au prix fort et avec un arrêt d\'exploitation.'},
+      {t:'Laisser la question à l\'armateur après la livraison.',e:{b:0,d:0,q:-10,s:-10},fb:'La conformité réglementaire fait partie du périmètre du projet. La renvoyer à plus tard, c\'est reporter le risque et dégrader la relation avec le client.'}]},
+  { title:'Défaut de soudure', concept:'Qualité et société de classification',
+    ctx:'L\'inspecteur de la société de classification relève des soudures non conformes sur un bloc de coque.',
+    opts:[
+      {t:'Reprendre les soudures, renforcer les contrôles non destructifs et analyser la cause.',e:{b:-5,d:-5,q:15,s:10},best:true,fb:'La classification certifie que le navire respecte ses règles de construction : sans son certificat, pas d\'assurance ni d\'exploitation. Traiter la cause (procédure, formation des soudeurs) évite que le défaut se répète.'},
+      {t:'Demander une dérogation pour éviter de perdre du temps.',e:{b:0,d:3,q:-15,s:-15},fb:'Une dérogation sur la structure est rarement accordée, et elle fragilise la confiance de l\'inspecteur pour la suite du projet.'},
+      {t:'Recouvrir rapidement le bloc de peinture avant la prochaine inspection.',e:{b:3,d:5,q:-25,s:-25},fb:'Inacceptable : c\'est une fraude qui met des vies en danger. Les défauts cachés réapparaissent tôt ou tard, et les conséquences juridiques sont lourdes.'}]},
+  { title:'Retard de 6 semaines', concept:'Maîtrise du planning',
+    ctx:'À mi-construction, l\'assemblage des blocs a 6 semaines de retard.',
+    opts:[
+      {t:'Analyser les causes, replanifier et renforcer les équipes uniquement sur les tâches critiques.',e:{b:-5,d:10,q:0,s:0},best:true,fb:'On ne rattrape un retard qu\'en agissant sur le chemin critique. Renforcer les tâches qui ont de la marge ne sert à rien, et comprendre la cause évite qu\'il se reproduise.'},
+      {t:'Imposer des heures supplémentaires à tout le chantier pendant 3 mois.',e:{b:-10,d:5,q:-5,s:-10},fb:'La fatigue fait baisser la productivité et augmente les accidents. Les heures supplémentaires généralisées sont une solution coûteuse et de courte durée.'},
+      {t:'Raccourcir les essais en mer de moitié pour tenir la date.',e:{b:3,d:10,q:-15,s:-10},fb:'Les essais sont la dernière barrière avant l\'exploitation. Les réduire, c\'est découvrir les problèmes chez le client, en mer.'}]},
+  { title:'Essais en mer', concept:'Contrat et réception',
+    ctx:'Aux essais, le navire atteint 0,3 nœud de moins que la vitesse prévue au contrat.',
+    opts:[
+      {t:'Analyser la cause (carène, hélice), puis appliquer les clauses prévues au contrat avec l\'armateur.',e:{b:-5,d:0,q:5,s:0},best:true,fb:'Les contrats de construction navale prévoient en général des pénalités de vitesse ou de consommation par paliers. Les connaître et les appliquer de bonne foi évite le litige.'},
+      {t:'Changer l\'hélice avant de livrer, quoi qu\'il en coûte.',e:{b:-10,d:-10,q:10,s:0},fb:'Possible, mais cher et long. C\'est à comparer avec la pénalité prévue au contrat : la meilleure décision technique n\'est pas toujours la meilleure décision de projet.'},
+      {t:'Contester la mesure et refuser toute discussion.',e:{b:-10,d:-5,q:-10,s:0},fb:'Le litige coûte du temps, de l\'argent et la relation client. Un chef de projet cherche des faits et s\'appuie sur le contrat.'}]},
+  ]},
+{ id:'terminal', icon:'⚓', title:'Agrandir un terminal portuaire', pitch:'Un nouveau quai de 400 m pour accueillir de plus gros porte-conteneurs, sans arrêter le port.',
+  steps:[
+  { title:'Lancement du projet', concept:'Étude d\'impact et concertation',
+    ctx:'Le projet touche une zone littorale sensible. Les associations locales s\'inquiètent.',
+    opts:[
+      {t:'Lancer tôt l\'étude d\'impact environnemental et une concertation publique.',e:{b:-3,d:-5,q:5,s:15},best:true,fb:'Anticiper l\'étude d\'impact et associer le public réduit fortement le risque de recours, qui peut bloquer un chantier pendant des années.'},
+      {t:'Faire le minimum légal, le plus tard possible.',e:{b:0,d:-10,q:0,s:-10},fb:'Une étude bâclée fragilise l\'autorisation, et un recours peut suspendre le projet. Le temps « gagné » au début se perd largement ensuite.'},
+      {t:'Commencer les travaux préparatoires avant d\'avoir l\'autorisation.',e:{b:-5,d:-15,q:0,s:-25},fb:'Travailler sans autorisation expose à un arrêt du chantier, à des sanctions et à une perte totale de confiance des parties prenantes.'}]},
+  { title:'Les sols', concept:'Risque géotechnique',
+    ctx:'Les sondages des sols sous le futur quai sont anciens et incomplets.',
+    opts:[
+      {t:'Compléter la campagne de sondages avant de dimensionner le quai.',e:{b:-3,d:-3,q:15,s:5},best:true,fb:'Le sol est l\'une des premières causes de dérive des grands projets maritimes. Une campagne géotechnique coûte peu comparée à une fondation à reprendre.'},
+      {t:'Dimensionner avec de très grandes marges de sécurité, sans nouveaux sondages.',e:{b:-12,d:0,q:5,s:5},fb:'Le quai tiendra, mais il coûtera bien plus cher que nécessaire. La prudence sans information a un prix.'},
+      {t:'Se fier aux données existantes.',e:{b:-15,d:-10,q:-15,s:-5},fb:'Si le sol est moins bon que prévu, on le découvre pendant les travaux : redimensionnement, retard et avenants avec l\'entreprise.'}]},
+  { title:'Le dragage', concept:'Gestion des sédiments',
+    ctx:'Il faut draguer le bassin pour les nouveaux navires. Les sédiments pourraient être pollués.',
+    opts:[
+      {t:'Analyser les sédiments, puis choisir la filière adaptée (immersion encadrée ou traitement à terre).',e:{b:-5,d:-3,q:5,s:15},best:true,fb:'La destination des sédiments dépend de leur qualité. Les analyser d\'abord permet d\'immerger ce qui peut l\'être et de traiter à terre seulement ce qui doit l\'être.'},
+      {t:'Tout immerger au large pour réduire les coûts.',e:{b:5,d:3,q:0,s:-25},fb:'Immerger des sédiments pollués sans autorisation est interdit et dangereux pour le milieu marin. Le risque juridique et d\'image est majeur.'},
+      {t:'Tout traiter à terre par précaution.',e:{b:-15,d:-5,q:0,s:10},fb:'Très sûr, mais très cher : le traitement à terre coûte bien plus que l\'immersion. Sans analyses, on paie pour des sédiments qui n\'en avaient pas besoin.'}]},
+  { title:'Le port reste ouvert', concept:'Coactivité et sécurité',
+    ctx:'Les navires continuent d\'accoster pendant les travaux, juste à côté du chantier.',
+    opts:[
+      {t:'Phaser les travaux avec l\'exploitant, avec un plan de prévention et de circulation commun.',e:{b:-3,d:-3,q:5,s:15},best:true,fb:'Quand deux activités se superposent, la plupart des accidents viennent d\'un manque de coordination. Un plan de prévention partagé est la base.'},
+      {t:'Fermer une partie du terminal pendant 6 mois.',e:{b:-15,d:5,q:0,s:5},fb:'Plus simple pour le chantier, mais les pertes d\'exploitation et les clients perdus pèsent lourd sur le bilan global du projet.'},
+      {t:'Laisser chacun s\'organiser de son côté.',e:{b:0,d:3,q:-5,s:-25},fb:'Grues, engins et camions qui se croisent sans coordination : c\'est la recette de l\'accident grave.'}]},
+  { title:'La sûreté', concept:'Code ISPS',
+    ctx:'Le nouveau quai fera partie d\'une installation portuaire soumise au code ISPS (sûreté).',
+    opts:[
+      {t:'Intégrer clôtures, contrôle d\'accès et vidéo dans le projet, et mettre à jour l\'évaluation de sûreté.',e:{b:-4,d:0,q:5,s:15},best:true,fb:'Le code ISPS de l\'OMI impose aux installations portuaires une évaluation et un plan de sûreté. Les prévoir dans le projet évite de rajouter des équipements après coup.'},
+      {t:'Ajouter les équipements de sûreté après la mise en service.',e:{b:-6,d:-5,q:0,s:-10},fb:'Reporter la sûreté retarde l\'ouverture du quai aux navires concernés, et coûte plus cher que de l\'intégrer en conception.'},
+      {t:'Ne rien prévoir : le port a déjà sa clôture.',e:{b:3,d:0,q:-5,s:-25},fb:'Un nouveau quai modifie le périmètre de sûreté. Sans mise à jour, l\'installation risque de ne plus être conforme.'}]},
+  { title:'La tempête', concept:'Gestion des risques',
+    ctx:'Une tempête endommage le rideau de palplanches en cours de construction.',
+    opts:[
+      {t:'Activer l\'assurance tous risques chantier, analyser les dégâts et suivre un plan de reprise.',e:{b:-3,d:-5,q:5,s:5},best:true,fb:'Un registre des risques prévoit ce type d\'événement : assurance, procédure de mise en sécurité, plan de reprise. Le retour d\'expérience améliore la suite du chantier.'},
+      {t:'Reconstruire à l\'identique, le plus vite possible.',e:{b:-8,d:0,q:-5,s:-10},fb:'Sans analyse, on risque de reproduire la même faiblesse. La précipitation après un incident est une source classique de nouveaux accidents.'},
+      {t:'Tout arrêter et invoquer la force majeure.',e:{b:-5,d:-15,q:0,s:0},fb:'La force majeure se discute selon le contrat et ne règle pas le problème technique. Pendant ce temps, le projet n\'avance plus.'}]},
+  ]},
+{ id:'eolien', icon:'🌬️', title:'Installer un parc éolien en mer', pitch:'60 éoliennes posées sur le fond, un câble d\'export vers la côte, et une météo qui décide de tout.',
+  steps:[
+  { title:'Connaître le site', concept:'Études de site',
+    ctx:'Avant de concevoir les fondations, il faut connaître les fonds marins.',
+    opts:[
+      {t:'Mener une campagne géophysique et géotechnique complète, avec recherche de munitions non explosées.',e:{b:-5,d:-3,q:10,s:15},best:true,fb:'Les fonds de la Manche et de la mer du Nord contiennent encore des munitions des deux guerres mondiales. Les détecter avant les travaux est indispensable pour la sécurité.'},
+      {t:'Faire quelques prélèvements seulement, aux emplacements principaux.',e:{b:3,d:3,q:-10,s:-10},fb:'Des fondations dimensionnées sur trop peu de données risquent d\'être mal adaptées, et les mauvaises surprises arrivent pendant l\'installation, au pire moment.'},
+      {t:'S\'appuyer sur les cartes marines existantes.',e:{b:5,d:5,q:-15,s:-20},fb:'Les cartes marines servent à naviguer, pas à fonder des éoliennes. Ce raccourci expose à des risques graves.'}]},
+  { title:'Le navire d\'installation', concept:'Ressources critiques',
+    ctx:'Les navires autoélévateurs capables d\'installer des éoliennes sont rares et réservés longtemps à l\'avance.',
+    opts:[
+      {t:'Réserver tôt un navire adapté, avec une fenêtre d\'utilisation flexible.',e:{b:-5,d:15,q:5,s:0},best:true,fb:'Une ressource rare et très demandée est souvent le vrai chemin critique d\'un projet éolien en mer. La sécuriser tôt protège tout le planning.'},
+      {t:'Attendre la fin de la conception pour le réserver.',e:{b:0,d:-20,q:0,s:0},fb:'Le navire risque de ne plus être disponible avant la saison suivante : le projet peut perdre une année entière.'},
+      {t:'Prendre un navire moins adapté, disponible tout de suite.',e:{b:-3,d:-5,q:-10,s:-5},fb:'Un navire limité en capacité de levage ou en profondeur d\'eau ralentit les opérations et augmente les risques.'}]},
+  { title:'La météo', concept:'Fenêtres météo',
+    ctx:'L\'installation n\'est possible que lorsque la houle et le vent restent sous certaines limites.',
+    opts:[
+      {t:'Planifier les opérations lourdes l\'été, avec des marges météo et des limites de houle fixées à l\'avance.',e:{b:-3,d:10,q:5,s:10},best:true,fb:'Les limites d\'opération sont fixées avant de partir en mer, quand personne n\'est sous pression. Le planning intègre statistiquement les jours où l\'on ne pourra pas travailler.'},
+      {t:'Prévoir de travailler en continu toute l\'année.',e:{b:-10,d:-10,q:0,s:-10},fb:'L\'hiver, les jours exploitables sont bien plus rares. Le navire, très cher à la journée, attendra au port.'},
+      {t:'Assouplir les limites de houle pour rattraper le retard.',e:{b:3,d:5,q:-10,s:-25},fb:'C\'est la décision la plus dangereuse : les limites existent pour protéger les équipes et le matériel. On ne les négocie jamais sous la pression du planning.'}]},
+  { title:'Les pêcheurs', concept:'Parties prenantes',
+    ctx:'La zone du parc est une zone de pêche importante pour les ports voisins.',
+    opts:[
+      {t:'Associer les pêcheurs : cartographie des zones, règles de cohabitation, mesures d\'accompagnement.',e:{b:-4,d:5,q:5,s:15},best:true,fb:'Les usagers de la mer sont des parties prenantes clés. Construire la cohabitation avec eux réduit les conflits et les recours.'},
+      {t:'Faire une consultation minimale.',e:{b:0,d:-15,q:0,s:-5},fb:'Les tensions non traitées se transforment en recours ou en blocages en mer, qui coûtent bien plus que la concertation.'},
+      {t:'Interdire la zone et passer outre les protestations.',e:{b:0,d:-15,q:-5,s:-15},fb:'Passer en force fragilise l\'acceptation du projet, et les retards finissent par coûter plus cher.'}]},
+  { title:'Le câble d\'export', concept:'Interfaces techniques',
+    ctx:'Le câble qui ramène l\'électricité à terre doit croiser deux câbles de télécommunications.',
+    opts:[
+      {t:'Étudier les sols le long du tracé, ensouiller le câble et organiser les croisements avec leurs propriétaires.',e:{b:-5,d:-3,q:15,s:5},best:true,fb:'Les avaries de câbles comptent parmi les sinistres les plus coûteux de l\'éolien en mer. Ensouillage, protection et accords de croisement sont essentiels.'},
+      {t:'Poser le câble sur le fond sans l\'ensouiller, pour aller plus vite.',e:{b:5,d:5,q:-15,s:-10},fb:'Un câble exposé peut être endommagé par les ancres et les chaluts. La production du parc entier en dépend.'},
+      {t:'Contourner les câbles existants par un long détour.',e:{b:-12,d:-5,q:0,s:0},fb:'Ça évite les croisements, mais allonge le câble, les pertes électriques et le coût.'}]},
+  { title:'Le bruit sous-marin', concept:'Environnement pendant les travaux',
+    ctx:'Le battage des pieux de fondation produit un bruit sous-marin intense, dangereux pour les mammifères marins.',
+    opts:[
+      {t:'Mettre en place un rideau de bulles, un démarrage progressif et des observateurs de mammifères marins.',e:{b:-5,d:-3,q:5,s:20},best:true,fb:'Ces mesures de réduction sont courantes sur les chantiers éoliens en mer, et souvent imposées par l\'autorisation environnementale.'},
+      {t:'Battre les pieux la nuit, à pleine puissance, pour aller vite.',e:{b:3,d:5,q:0,s:-25},fb:'Sans mesures de réduction, le chantier met en danger la faune marine et risque d\'être suspendu par les autorités.'},
+      {t:'Changer de type de fondation en cours de projet.',e:{b:-15,d:-20,q:0,s:5},fb:'Changer la conception si tard bouleverse tout le projet. La question devait être traitée dès les études.'}]},
+  ]},
+];
+const G=[['b','💶 Budget'],['d','⏱️ Délai'],['q','✅ Qualité'],['s','🛡️ Sécurité & environnement']];
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let S=null; // partie en cours
+
+function home(){
+  const best=store.get('mpm_best',{});
+  app.innerHTML=`<h1>MS <b>MPM</b> · Formation</h1>
+  <div class="sub">Un serious game de management de projets maritimes. Six décisions par projet, et pour chacune une explication. À jouer seul, ou en groupe en discutant avant chaque choix.</div>
+  <div class="scen">${SCENARIOS.map((s,i)=>`<button data-s="${i}"><div class="ic">${s.icon}</div><div class="tt">${esc(s.title)}</div>${esc(s.pitch)}${best[s.id]!=null?`<div class="best">Meilleur score : ${best[s.id]}/100</div>`:''}</button>`).join('')}</div>
+  <div class="card"><b>Comment ça marche ?</b><div class="tip" style="font-size:14px;line-height:1.55">Quatre indicateurs partent à 70 : budget, délai, qualité, sécurité et environnement. Chaque décision les fait monter ou baisser. Il n'y a pas toujours de choix parfait, mais il y a toujours une bonne pratique. À la fin, un débriefing reprend chaque décision et la notion de management de projet qu'elle illustre.</div></div>`;
+  app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>start(+b.dataset.s));
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function start(i){
+  const sc=SCENARIOS[i];
+  S={sc,i:0,g:{b:70,d:70,q:70,s:70},answers:[],order:sc.steps.map(st=>shuffle(st.opts.map((_,k)=>k))),last:null};
+  step();scrollTo(0,0);
+}
+function gauges(delta){
+  return `<div class="gauges">${G.map(([k,n])=>{const v=S.g[k];const col=v>=70?'var(--you)':v>=45?'var(--acc)':'var(--bad)';const dv=delta&&delta[k]?delta[k]:0;
+    return`<div class="g"><div class="l">${n}</div><div class="v">${v}${dv?`<span class="dl ${dv>0?'pos':'neg'}">${dv>0?'+':''}${dv}</span>`:''}</div><div class="tr"><i style="width:${v}%;background:${col}"></i></div></div>`;}).join('')}</div>`;
+}
+function step(){
+  const st=S.sc.steps[S.i];const ord=S.order[S.i];
+  app.innerHTML=`${gauges()}<div class="card"><div class="step">${S.sc.icon} ${esc(S.sc.title)} · Décision ${S.i+1} / ${S.sc.steps.length}</div>
+  <div class="sit">${esc(st.title)}</div><div class="ctx">${esc(st.ctx)}</div>
+  <div class="opts">${ord.map(k=>`<button data-o="${k}">${esc(st.opts[k].t)}</button>`).join('')}</div><div id="fb"></div></div>`;
+  app.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>choose(+b.dataset.o));
+}
+function choose(k){
+  const st=S.sc.steps[S.i],o=st.opts[k];
+  for(const key in o.e)S.g[key]=Math.max(0,Math.min(100,S.g[key]+o.e[key]));
+  S.answers.push(k);
+  const bestK=st.opts.findIndex(x=>x.best);
+  const ord=S.order[S.i];
+  app.innerHTML=`${gauges(o.e)}<div class="card"><div class="step">${S.sc.icon} ${esc(S.sc.title)} · Décision ${S.i+1} / ${S.sc.steps.length}</div>
+  <div class="sit">${esc(st.title)}</div><div class="ctx">${esc(st.ctx)}</div>
+  <div class="opts">${ord.map(j=>`<button disabled class="${j===k?'pick':''} ${j===bestK&&j!==k?'best':''}">${j===k?'👉 ':''}${j===bestK?'✅ ':''}${esc(st.opts[j].t)}</button>`).join('')}</div>
+  <div class="fb ${o.best?'good':''}"><span class="tag">📘 ${esc(st.concept)}</span><div><b>${o.best?'Bonne pratique !':'À retenir'}</b></div>
+  <div class="eff">${G.map(([key,n])=>o.e[key]?`<span class="${o.e[key]>0?'pos':'neg'}">${n.split(' ')[0]} ${o.e[key]>0?'+':''}${o.e[key]}</span>`:'').join('')}</div>${esc(o.fb)}
+  ${o.best?'':`<div class="tip">✅ La bonne pratique : ${esc(st.opts[bestK].t)}</div>`}</div>
+  <button class="btn" id="next">${S.i+1<S.sc.steps.length?'Décision suivante →':'Voir le bilan du projet →'}</button></div>`;
+  document.getElementById('next').onclick=()=>{S.i++;if(S.i<S.sc.steps.length){step();scrollTo(0,0);}else end();};
+}
+function end(){
+  const score=Math.round((S.g.b+S.g.d+S.g.q+S.g.s)/4);
+  const nBest=S.answers.filter((k,i)=>S.sc.steps[i].opts[k].best).length;
+  const [grade,label]=score>=74?['A','Excellent chef de projet']:score>=62?['B','Bon chef de projet']:score>=50?['C','Projet sauvé de justesse']:['D','Projet en difficulté'];
+  const best=store.get('mpm_best',{});if(best[S.sc.id]==null||score>best[S.sc.id]){best[S.sc.id]=score;store.set('mpm_best',best);}
+  const deb=S.sc.steps.map((st,i)=>{const o=st.opts[S.answers[i]];const b=st.opts.find(x=>x.best);
+    return`<div><b>${i+1}. ${esc(st.title)}</b> · <span class="sub">${esc(st.concept)}</span><br>
+    <span class="${o.best?'ok':'ko'}">${o.best?'✅':'❌'} Ton choix : ${esc(o.t)}</span>${o.best?'':`<br><span class="ok">✅ Bonne pratique : ${esc(b.t)}</span>`}</div>`;}).join('');
+  const summary=`MS MPM · ${S.sc.title}\nScore : ${score}/100 (${grade} · ${label})\nBonnes pratiques : ${nBest}/${S.sc.steps.length}\n`+G.map(([k,n])=>`${n} : ${S.g[k]}`).join('\n');
+  app.innerHTML=`${gauges()}<div class="card" style="text-align:center"><div class="step">${S.sc.icon} ${esc(S.sc.title)} · Bilan</div>
+  <div class="grade">${grade}</div><div style="font-size:18px;font-weight:800">${label}</div>
+  <div class="sub" style="margin-top:6px">Score ${score}/100 · ${nBest} bonne${nBest>1?'s':''} pratique${nBest>1?'s':''} sur ${S.sc.steps.length}</div></div>
+  <div class="card"><b>Débriefing</b><div class="deb">${deb}</div></div>
+  <button class="btn" id="again">Rejouer ce projet</button> <button class="btn ghost" id="home">Choisir un autre projet</button> <button class="btn ghost" id="copy">Copier le bilan</button><div class="tip" id="copied"></div>`;
+  document.getElementById('again').onclick=()=>start(SCENARIOS.indexOf(S.sc));
+  document.getElementById('home').onclick=()=>{home();scrollTo(0,0);};
+  document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(summary);document.getElementById('copied').textContent='Bilan copié ! Tu peux le coller dans un message ou un rapport.';}catch(e){document.getElementById('copied').textContent='Copie impossible ici.';}};
+  scrollTo(0,0);
+}
+home();
+})();
+</script>
+</body>
+</html>
