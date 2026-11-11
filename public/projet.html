@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MS MPM · Le Chantier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%93%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0e1120">
+<meta name="description" content="Pilote la construction d'un navire pendant 60 secondes. Le joueur suivant hérite de tes décisions.">
+<meta property="og:title" content="MS MPM · Le Chantier">
+<meta property="og:description" content="Pilote la construction d'un navire pendant 60 secondes. Le joueur suivant hérite de tes décisions.">
+<meta property="og:image" content="/og.png">
+<meta property="og:type" content="website">
 <style>
 :root{--bg:#0e1120;--panel:#171b2e;--line:#272d4a;--txt:#e9ebf7;--mut:#8a90b2;--acc:#ffcc33;--you:#4ade80;--bad:#f87171;--blue:#60a5fa}
 *{box-sizing:border-box}
@@ -101,12 +108,26 @@ input[type=text]{flex:1}
 .float{position:fixed;bottom:20px;font-size:26px;pointer-events:none;animation:up 2.2s ease-out forwards;z-index:9}
 @keyframes up{to{transform:translateY(-240px) scale(1.3);opacity:0}}
 #hist{font-size:13px}
+details.help{background:#11152a;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.55}
+details.help summary{cursor:pointer;font-weight:700}
+details.help ul{margin:8px 0 4px;padding-left:18px;color:#c5c9de}
+.ev{display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:stretch}
+@media (max-width:640px){.ev{grid-template-columns:1fr}}
+#curve{width:100%;height:180px;background:#11152a;border:1px solid var(--line);border-radius:10px}
+.evk{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.evk div{background:#11152a;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.evk .l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.evk .v{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.evk .v.good{color:var(--you)}.evk .v.bad{color:var(--bad)}
+.legend{display:flex;gap:12px;font-size:11px;color:var(--mut);margin-top:4px;flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+.evnote{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.5}
 #hist div{display:flex;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px dashed var(--line)}
 #hist b{color:var(--acc)}
 </style>
 </head>
 <body>
-<nav><a href="/">🏗️ Le Relais</a><a href="/projet" class="on">📊 Le Chantier</a><a href="/formation">🎓 Formation</a></nav>
+<nav><a href="/">🏠 Accueil</a><a href="/relais">🏗️ Le Relais</a><a href="/projet" class="on">📊 Le Chantier</a><a href="/formation">🎓 Formation</a></nav>
 <div class="wrap">
   <header>
     <div>
@@ -128,7 +149,19 @@ input[type=text]{flex:1}
         <div class="kpi" id="kQual"><div class="l">Qualité</div><div class="v" id="vQual">80</div><div class="s">contrôles, conformité</div></div>
         <div class="kpi" id="kMor"><div class="l">Moral</div><div class="v" id="vMor">80</div><div class="s">productivité, sécurité</div></div>
       </div>
+      <details class="help"><summary>❓ Comment jouer</summary><ul>
+        <li>Fais la queue. À ton tour, tu as <b>60 secondes</b>, soit <b>12 semaines</b> de projet.</li>
+        <li>Mets les équipes sur la <b>phase en cours</b> (en jaune) : une équipe ailleurs coûte sans faire avancer le planning. L'équipe de la phase suivante peut prendre un peu d'avance.</li>
+        <li>Garde au moins une équipe <b>Qualité / HSE</b> pendant la construction, sinon la qualité chute et les accidents augmentent.</li>
+        <li>Les <b>heures sup</b> accélèrent, mais coûtent cher et usent le moral.</li>
+        <li>Tranche les <b>aléas</b> vite : sans décision en 4 semaines, l'option 2 s'applique d'office.</li>
+        <li>Surveille la <b>valeur acquise</b> : CPI et SPI au-dessus de 1, c'est un projet sous contrôle.</li></ul></details>
       <div><h2>Planning</h2><div id="phases"></div></div>
+      <div><h2>Valeur acquise (Earned Value)</h2>
+        <div class="ev"><div><svg id="curve" viewBox="0 0 400 180" preserveAspectRatio="none"></svg>
+          <div class="legend"><span><i style="background:#8a90b2"></i>Prévu (PV)</span><span><i style="background:#60a5fa"></i>Réalisé (EV)</span><span><i style="background:#fb923c"></i>Dépensé (AC)</span><span><i style="background:#f87171"></i>Échéance</span></div></div>
+          <div class="evk" id="evk"></div></div>
+        <div class="evnote" id="evnote"></div></div>
       <div id="eventBox"></div>
       <div class="cols">
         <div><h2>Équipes</h2><div id="teams"></div><div class="tot" id="tot"></div></div>
@@ -169,7 +202,7 @@ const fr=(n,d=0)=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:d,mini
 const PHASES=['Conception','Achats','Construction','Essais en mer'];
 const TEAMS=[['ing','Ingénierie','fait avancer la conception'],['ach','Achats','fait avancer les achats'],['prod','Production','fait avancer la construction'],['qhse','Qualité / HSE','essais, qualité, sécurité']];
 const REL=['ing','ach','prod','qhse'];
-let myId=null,turn=null,queue={list:[],ids:[],total:0},turnMs=60000,P=null,history=[],connected=false;
+let mySnap=null,myId=null,turn=null,queue={list:[],ids:[],total:0},turnMs=60000,P=null,history=[],connected=false;
 const isMe=()=>turn&&turn.id===myId;
 const playing=()=>isMe()&&performance.now()>=turn.playAt&&performance.now()<turn.endsAt;
 
@@ -188,8 +221,12 @@ function sendHello(){send({t:'hello',name:myName(),flag:$('flag').value});}
 function setTurn(t){
   const wasMe=isMe();
   if(t){const now=performance.now();turn={id:t.id,name:t.name,flag:t.flag,playAt:now+t.playIn,endsAt:now+t.endsIn,total:t.total};}else turn=null;
-  if(isMe())banner('À TOI DE PILOTER !','12 semaines de projet. Le monde entier te regarde 👀');
-  else if(wasMe)banner('Merci, chef !','Ton tour est fini. Le suivant hérite de tes décisions.');
+  if(isMe()){mySnap=P?{week:P.week,budget:P.budget,prog:progOf(P),ship:P.ship}:null;banner('À TOI DE PILOTER !','12 semaines de projet. Le monde entier te regarde 👀');}
+  else if(wasMe){
+    if(mySnap&&P&&P.ship===mySnap.ship){const dp=Math.round(progOf(P)-mySnap.prog),db=P.budget-mySnap.budget;
+      banner('Merci, chef ! Ton bilan :',`Semaines ${mySnap.week} → ${P.week} · avancement +${dp} % · budget ${db>=0?'+':''}${fr(db,1)} M€`);}
+    else banner('Merci, chef !','Ton tour est fini. Le suivant hérite de tes décisions.');
+    mySnap=null;}
   else if(turn)banner(`${turn.flag} ${turn.name} prend la direction du projet`,'Prêt ?');
   render();renderQueue();
 }
@@ -228,8 +265,32 @@ function render(){
   if(P.event){const left=4-P.event.age;
     $('eventBox').innerHTML=`<div class="event"><div class="tt">${esc(P.event.title)}</div><p>${esc(P.event.text)}</p><div class="ch">${P.event.options.map((o,i)=>`<button data-c="${i}" ${can?'':'disabled'}>${esc(o)}</button>`).join('')}</div><div class="age">⚖️ Sans décision, l'option 2 s'appliquera d'office dans ${left} semaine${left>1?'s':''}.</div></div>`;}
   else $('eventBox').innerHTML='<div class="noevent">✅ Aucun aléa en attente de décision.</div>';
+  renderEV();
   $('log').innerHTML=P.log.map(l=>`<div><span>S${l.w}</span>${esc(l.text)}</div>`).join('');
   $('watch').textContent=isMe()?(can?'':'Prépare-toi…'):turn?`Tu regardes ${turn.name} piloter. Fais la queue pour prendre la main.`:'Personne ne pilote : le projet est à l\'arrêt. Fais la queue !';
+}
+const BAC=120,WORK=[32,24,80,24];
+const progOf=p=>p.phases.reduce((s,v,i)=>s+v*WORK[i],0)/160;
+const pvAt=(w,dl)=>100*Math.min(1,Math.max(0,w/dl)); // planning de référence linéaire
+function renderEV(){
+  const w=P.week,pr=progOf(P),EV=pr/100*BAC,AC=BAC-P.budget,PV=pvAt(w,P.deadline)/100*BAC;
+  const cpi=AC>0.5?EV/AC:null,spi=PV>0.5?EV/PV:null,eac=cpi?BAC/cpi:null,fin=spi&&pr<100?Math.round(P.deadline/spi):null;
+  const cls=v=>v==null?'':v>=1?'good':v<0.9?'bad':'';
+  $('evk').innerHTML=`<div><div class="l">CPI (coût)</div><div class="v ${cls(cpi)}">${cpi?fr(cpi,2):'–'}</div></div>
+    <div><div class="l">SPI (délai)</div><div class="v ${cls(spi)}">${spi?fr(spi,2):'–'}</div></div>
+    <div><div class="l">Coût final prévu</div><div class="v ${eac?eac<=BAC?'good':'bad':''}">${eac?fr(eac,0)+' M€':'–'}</div></div>
+    <div><div class="l">Fin prévue</div><div class="v ${fin?fin<=P.deadline?'good':'bad':''}">${fin?'sem. '+fin:'–'}</div></div>`;
+  $('evnote').textContent=cpi&&spi?`Avancement réel ${fr(pr,0)} % pour ${fr(pvAt(w,P.deadline),0)} % prévu. ${cpi>=1?'Chaque euro dépensé produit au moins un euro de travail.':'Le travail coûte plus cher que prévu.'} ${spi>=1?'Le projet est en avance ou à l\'heure.':'Le projet prend du retard sur le planning.'}`:'Les indicateurs apparaissent dès les premières semaines de projet.';
+  const H=P.hist||[];const maxW=Math.max(P.deadline+4,w+2);const maxY=Math.max(BAC,...H.map(h=>h[2]))*1.1;
+  const X=v=>v/maxW*400,Y=v=>180-v/maxY*172;
+  let pvPath='';for(let i=0;i<=P.deadline;i++)pvPath+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(pvAt(i,P.deadline)/100*BAC).toFixed(1);
+  const line=k=>H.length?'M'+X(0)+' '+Y(0)+H.map(h=>'L'+X(h[0]).toFixed(1)+' '+Y(k===1?h[1]/100*BAC:h[2]).toFixed(1)).join(''):'';
+  $('curve').innerHTML=`<line x1="0" y1="${Y(BAC)}" x2="400" y2="${Y(BAC)}" stroke="#3a4170" stroke-dasharray="3 3"/><text x="4" y="${Y(BAC)-3}" fill="#8a90b2" font-size="10">Budget 120 M€</text>
+    <line x1="${X(P.deadline)}" y1="0" x2="${X(P.deadline)}" y2="180" stroke="#f87171" stroke-dasharray="4 3"/>
+    <path d="${pvPath}" fill="none" stroke="#8a90b2" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>
+    <path d="${line(2)}" fill="none" stroke="#fb923c" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    <path d="${line(1)}" fill="none" stroke="#60a5fa" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    <line x1="${X(w)}" y1="0" x2="${X(w)}" y2="180" stroke="#ffcc33" stroke-width="1" opacity=".6"/>`;
 }
 function renderHist(){if(!history.length)return;$('hist').innerHTML=history.map(h=>`<div><span>🚢 ${esc(h.ship)}<br><span class="sub">${h.weeks} sem.${h.late?` (${h.late} de retard)`:''} · ${fr(h.budget,1)} M€ · qualité ${h.quality}</span></span><b>${fr(h.score)}</b></div>`).join('');}
 document.addEventListener('click',e=>{
@@ -265,7 +326,7 @@ $('chatForm').onsubmit=e=>{e.preventDefault();const t=$('chatIn').value.trim();i
 function floatEmoji(e){const s=document.createElement('span');s.className='float';s.textContent=e;s.style.left=(5+Math.random()*88)+'%';document.body.appendChild(s);setTimeout(()=>s.remove(),2300);}
 document.querySelectorAll('.reacts button').forEach(b=>b.onclick=()=>send({t:'react',e:b.dataset.e}));
 let bannerTimer=null;
-function banner(big,small){$('bBig').textContent=big;$('bSmall').textContent=small;$('banner').classList.add('on');clearTimeout(bannerTimer);bannerTimer=setTimeout(()=>$('banner').classList.remove('on'),2600);}
+function banner(big,small){$('bBig').textContent=big;$('bSmall').textContent=small;$('banner').classList.add('on');clearTimeout(bannerTimer);bannerTimer=setTimeout(()=>$('banner').classList.remove('on'),3400);}
 
 // ---------- horloge ----------
 let wasPlaying=false;

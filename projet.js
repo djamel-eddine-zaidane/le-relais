@@ -31,6 +31,12 @@ const EVENTS = [
     options: [{ label: 'Faire appel à un consultant (−2 M€)', eff: { budget: -2 } }, { label: 'Répartir sa charge (moral −8, +1 semaine)', eff: { morale: -8, delay: 1 } }], def: 1 },
   { id: 'grue', title: '🏗️ Panne de la grue portique', text: 'La grande grue du chantier est en panne pour 2 semaines.',
     options: [{ label: 'Louer une grue mobile (−2 M€)', eff: { budget: -2 } }, { label: 'Attendre la réparation (+2 semaines)', eff: { delay: 2 } }], def: 1 },
+  { id: 'faillite', title: '🏚️ Fournisseur en faillite', text: 'Le fournisseur des tuyauteries est placé en redressement judiciaire. Ses commandes sont gelées.',
+    options: [{ label: 'Basculer vers un fournisseur de secours qualifié (−3 M€)', eff: { budget: -3 } }, { label: 'Attendre la reprise de l\'entreprise (+3 semaines)', eff: { delay: 3 } }], def: 1 },
+  { id: 'subvention', title: '🌱 Opportunité : subvention verte', text: 'Un appel à projets finance la propulsion hybride. Il faut monter le dossier vite, avec une modification de conception.',
+    options: [{ label: 'Monter le dossier et adapter la conception (+6 M€, +1 semaine, qualité +4)', eff: { budget: 6, delay: 1, quality: 4 } }, { label: 'Laisser passer l\'opportunité', eff: {} }], def: 1 },
+  { id: 'echafaudage', title: '🦺 Contrôle de l\'inspection du travail', text: 'Un contrôleur relève des échafaudages non conformes dans le bloc moteur.',
+    options: [{ label: 'Arrêter la zone et mettre en conformité (−1 M€, moral +5)', eff: { budget: -1, morale: 5 } }, { label: 'Contester et continuer (moral −12, qualité −5)', eff: { morale: -12, quality: -5 } }], def: 1 },
 ];
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -41,7 +47,7 @@ function newProject(n) {
   return {
     n, ship: `${SHIPS[k % SHIPS.length]} n°${Math.floor(k / SHIPS.length) + 1}`,
     week: 0, deadline: 40, budget: 120, spent: 0, quality: 80, morale: 80,
-    phases: [0, 0, 0, 0], teams: { ing: 3, ach: 1, prod: 1, qhse: 1 }, overtime: false,
+    hist: [], phases: [0, 0, 0, 0], teams: { ing: 3, ach: 1, prod: 1, qhse: 1 }, overtime: false,
     event: null, nextEventIn: 4, auditCd: 0, trainCd: 0, log: [], done: false,
   };
 }
@@ -96,6 +102,9 @@ module.exports = function createProjet(data, save) {
     if (p.trainCd > 0) p.trainCd--;
     p.quality = r1(clamp(p.quality, 0, 100)); p.morale = r1(clamp(p.morale, 0, 100)); p.budget = r1(p.budget); p.spent = r1(p.spent);
     p.phases = p.phases.map(r1);
+    p.hist = p.hist || [];
+    p.hist.push([p.week, Math.round(progress(p) * 10) / 10, r1(120 - p.budget)]);
+    if (p.hist.length > 120) p.hist.shift();
     if (p.phases.every(v => v >= 100)) deliver();
     push();
   }
@@ -106,6 +115,7 @@ module.exports = function createProjet(data, save) {
     const late = Math.max(0, p.week - p.deadline), overrun = Math.max(0, -p.budget);
     const score = Math.max(0, Math.round(500 + p.quality * 3 + p.morale - late * 15 - overrun * 8 + Math.max(0, p.budget) * 2));
     const rec = { n: p.n, ship: p.ship, weeks: p.week, late, budget: r1(p.budget), quality: Math.round(p.quality), score, at: Date.now() };
+    data.projetDelivered = (data.projetDelivered || 0) + 1;
     data.projetHistory.unshift(rec); data.projetHistory = data.projetHistory.slice(0, 10);
     room.pushChat({ win: true, text: `🚢 ${p.ship} livré en ${p.week} semaines ! Score : ${score}` });
     room.broadcast({ t: 'delivered', rec, history: data.projetHistory });

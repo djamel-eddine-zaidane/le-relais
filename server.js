@@ -26,7 +26,8 @@ function save() {
 }
 
 // ---------- pages ----------
-const PAGES = { '/': 'index.html', '/index.html': 'index.html', '/projet': 'projet.html', '/formation': 'formation.html' };
+const PAGES = { '/': 'index.html', '/index.html': 'index.html', '/relais': 'relais.html', '/projet': 'projet.html', '/formation': 'formation.html' };
+const STATIC = { '/og.png': 'image/png' };
 const server = http.createServer((req, res) => {
   const url = req.url.split('?')[0];
   if (PAGES[url]) {
@@ -35,6 +36,19 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
       res.end(buf);
     });
+  } else if (STATIC[url]) {
+    fs.readFile(path.join(__dirname, 'public', url.slice(1)), (err, buf) => {
+      if (err) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { 'Content-Type': STATIC[url], 'Cache-Control': 'public, max-age=86400' });
+      res.end(buf);
+    });
+  } else if (url === '/api/stats') {
+    const p = data.projet;
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    res.end(JSON.stringify({
+      relais: { viewers: relais.clients.size, level: data.relais.level, deaths: data.relais.deaths, playing: relais.turn ? `${relais.turn.flag} ${relais.turn.name}` : null },
+      projet: { viewers: projet.room.clients.size, ship: p.ship, week: p.week, delivered: data.projetDelivered || 0, playing: projet.room.turn ? `${projet.room.turn.flag} ${projet.room.turn.name}` : null },
+    }));
   } else if (url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, relais: relais.clients.size, projet: projet.room.clients.size, level: data.relais.level }));

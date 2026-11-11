@@ -21,9 +21,10 @@ Objectif commun : valider 1 000 000 d'étapes.
 
 | Adresse | Jeu | Principe |
 |---|---|---|
-| `/` | 🏗️ **Le Relais** | Jeu de plateforme sur un chantier naval. Un seul joueur au monde, 60 s chacun, 1 000 000 d'étapes à valider ensemble. |
+| `/` | 🏠 **Accueil** | Présente les trois jeux, avec l'activité en direct (qui joue, combien de personnes en ligne). |
+| `/relais` | 🏗️ **Le Relais** | Jeu de plateforme sur un chantier naval. Un seul joueur au monde, 60 s chacun, 1 000 000 d'étapes à valider ensemble. |
 | `/projet` | 📊 **Le Chantier** | Gestion de projet en relais. Le joueur pilote la construction d'un navire pendant 60 s (= 12 semaines) : équipes, heures sup, audits, aléas. Le suivant hérite de ses décisions. |
-| `/formation` | 🎓 **Formation** | Serious game solo. 3 projets (navire, terminal portuaire, parc éolien en mer), 6 décisions chacun, avec explication et débriefing. |
+| `/formation` | 🎓 **Formation** | Serious game solo. 4 projets (navire, terminal portuaire, parc éolien en mer, décarbonation d'un ferry), 6 décisions chacun, avec explication, débriefing et glossaire. |
 
 ## Ce qu'il y a dans le projet
 
@@ -32,7 +33,9 @@ Objectif commun : valider 1 000 000 d'étapes.
 | `server.js` | Le serveur web : sert les pages et dirige chaque joueur vers la bonne salle |
 | `room.js` | Une salle : file d'attente mondiale, tours de 60 s, chat, réactions, spectateurs |
 | `projet.js` | La simulation du Chantier (planning, budget, qualité, moral, aléas, score) |
-| `public/index.html` | Le Relais |
+| `public/index.html` | L'accueil |
+| `public/relais.html` | Le Relais (sons, alerte quand c'est ton tour) |
+| `public/og.png` | L'image d'aperçu quand on partage le lien (LinkedIn, WhatsApp…) |
 | `public/projet.html` | Le Chantier |
 | `public/formation.html` | La Formation (fonctionne sans serveur) |
 | `package.json` | La liste des dépendances (une seule : `ws`, pour les WebSockets) |
@@ -44,6 +47,7 @@ Objectif commun : valider 1 000 000 d'étapes.
 - 8 équipes au maximum, 0,4 M€ par équipe et par semaine. Une équipe sur la mauvaise phase coûte sans rien produire.
 - Les aléas (grève, retard moteur, défaut de soudure, eaux de ballast…) demandent une décision. Si personne ne tranche en 4 semaines, l'option par défaut s'applique, souvent la pire.
 - À la livraison, un score combine délai, budget restant, qualité et moral. Les 10 derniers navires livrés sont affichés.
+- Le panneau **Valeur acquise** montre en direct la courbe prévu / réalisé / dépensé, le CPI (coût), le SPI (délai), le coût final prévu et la date de fin prévue.
 
 ## Tester sur ton ordinateur
 

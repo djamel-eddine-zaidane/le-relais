@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MS MPM · Formation</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%93%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0e1120">
+<meta name="description" content="Serious game de management de projets maritimes : navire, terminal portuaire, éolien en mer, décarbonation.">
+<meta property="og:title" content="MS MPM · Formation">
+<meta property="og:description" content="Serious game de management de projets maritimes : navire, terminal portuaire, éolien en mer, décarbonation.">
+<meta property="og:image" content="/og.png">
+<meta property="og:type" content="website">
 <style>
 :root{--bg:#0e1120;--panel:#171b2e;--line:#272d4a;--txt:#e9ebf7;--mut:#8a90b2;--acc:#ffcc33;--you:#4ade80;--bad:#f87171;--blue:#60a5fa}
 *{box-sizing:border-box}
@@ -16,8 +23,13 @@ h1{font-size:22px;margin:6px 0 4px}
 h1 b{color:var(--acc)}
 .sub{color:var(--mut);font-size:13px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
-.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.scen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
 @media (max-width:720px){.scen{grid-template-columns:1fr}}
+details.glo{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+details.glo summary{cursor:pointer;font-weight:800}
+.glo dl{margin:10px 0 0;font-size:14px;line-height:1.5}
+.glo dt{font-weight:800;color:var(--acc);margin-top:8px}
+.glo dd{margin:2px 0 0;color:#c5c9de}
 .scen button{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--txt);text-align:left;cursor:pointer;font-size:14px;line-height:1.45}
 .scen button:hover{border-color:var(--acc)}
 .scen .ic{font-size:34px}
@@ -55,7 +67,7 @@ h1 b{color:var(--acc)}
 </style>
 </head>
 <body>
-<nav><a href="/">🏗️ Le Relais</a><a href="/projet">📊 Le Chantier</a><a href="/formation" class="on">🎓 Formation</a></nav>
+<nav><a href="/">🏠 Accueil</a><a href="/relais">🏗️ Le Relais</a><a href="/projet">📊 Le Chantier</a><a href="/formation" class="on">🎓 Formation</a></nav>
 <div class="wrap" id="app"></div>
 <script>
 (()=>{
@@ -177,6 +189,44 @@ const SCENARIOS=[
       {t:'Mettre en place un rideau de bulles, un démarrage progressif et des observateurs de mammifères marins.',e:{b:-5,d:-3,q:5,s:20},best:true,fb:'Ces mesures de réduction sont courantes sur les chantiers éoliens en mer, et souvent imposées par l\'autorisation environnementale.'},
       {t:'Battre les pieux la nuit, à pleine puissance, pour aller vite.',e:{b:3,d:5,q:0,s:-25},fb:'Sans mesures de réduction, le chantier met en danger la faune marine et risque d\'être suspendu par les autorités.'},
       {t:'Changer de type de fondation en cours de projet.',e:{b:-15,d:-20,q:0,s:5},fb:'Changer la conception si tard bouleverse tout le projet. La question devait être traitée dès les études.'}]},
+  ]},{ id:'ferry', icon:'🌱', title:'Décarboner un ferry', pitch:'Un ferry rouleur-passagers de 20 ans entre deux ports européens. Les règles climatiques se durcissent : il faut le moderniser sans l\'arrêter longtemps.',
+  steps:[
+  { title:'Le diagnostic', concept:'Diagnostic et cadrage',
+    ctx:'Le ferry a reçu la note D pour son indicateur d\'intensité carbone (CII). L\'armateur veut « faire du vert », vite.',
+    opts:[
+      {t:'Lancer un audit énergétique complet : profil d\'exploitation, consommations, état de la coque et des moteurs.',e:{b:-3,d:-3,q:15,s:10},best:true,fb:'On ne choisit pas une solution avant de connaître le problème. Le CII de l\'OMI note chaque année l\'intensité carbone des navires de A à E. Un navire noté D trois années de suite, ou E une seule fois, doit présenter un plan d\'actions correctives.'},
+      {t:'Acheter tout de suite la technologie dont tout le monde parle.',e:{b:-12,d:0,q:-10,s:0},fb:'Une technologie à la mode n\'est pas forcément adaptée à ce navire et à sa ligne. Sans diagnostic, le risque est d\'investir beaucoup pour un gain faible.'},
+      {t:'Attendre de voir si la note s\'améliore toute seule.',e:{b:3,d:0,q:-5,s:-15},fb:'Les exigences de réduction se durcissent chaque année : sans action, la note a toutes les chances de se dégrader.'}]},
+  { title:'L\'indice EEXI', concept:'Conformité technique (EEXI)',
+    ctx:'Le calcul montre que le navire dépasse l\'indice d\'efficacité énergétique (EEXI) exigé pour son type.',
+    opts:[
+      {t:'Installer une limitation de puissance du moteur, puis vérifier l\'impact sur les horaires de la ligne.',e:{b:-2,d:0,q:5,s:10},best:true,fb:'Depuis le 1er janvier 2023, chaque navire doit respecter l\'EEXI requis pour obtenir son certificat d\'efficacité énergétique. La limitation de puissance du moteur est la mesure la plus utilisée : simple et peu coûteuse.'},
+      {t:'Remplacer entièrement les moteurs principaux.',e:{b:-20,d:-10,q:10,s:10},fb:'Efficace, mais disproportionné si une limitation de puissance suffit. Un chef de projet compare les solutions selon leur coût et leur effet.'},
+      {t:'Ne rien faire : le navire est ancien, il sera bientôt vendu.',e:{b:3,d:0,q:-10,s:-20},fb:'Sans conformité EEXI, le navire n\'obtient pas son certificat. Même un navire en fin de vie doit être conforme tant qu\'il navigue.'}]},
+  { title:'Le carburant', concept:'Analyse en coût global',
+    ctx:'Le règlement européen FuelEU Maritime, en vigueur depuis 2025, impose de réduire l\'intensité en gaz à effet de serre de l\'énergie utilisée à bord.',
+    opts:[
+      {t:'Comparer plusieurs options (biocarburants, électricité à quai, GNL…) sur leur coût total et leurs émissions du puits au sillage.',e:{b:-3,d:-3,q:10,s:15},best:true,fb:'FuelEU raisonne « du puits au sillage » : production du carburant comprise. Ajoutez le système européen d\'échange de quotas (EU ETS), qui couvre le transport maritime depuis 2024 : le carbone a désormais un prix. Seule une analyse en coût global permet de bien choisir.'},
+      {t:'Passer au GNL immédiatement, sans étude.',e:{b:-15,d:-5,q:0,s:-5},fb:'Le GNL réduit certaines émissions, mais les fuites de méthane non brûlé peuvent annuler une partie du gain climatique. Une conversion lourde sans étude est un pari risqué.'},
+      {t:'Garder le fioul et payer les pénalités chaque année.',e:{b:-12,d:0,q:-5,s:-15},fb:'Les pénalités et le prix du carbone vont augmenter avec le durcissement des objectifs. Ce choix coûte de plus en plus cher chaque année.'}]},
+  { title:'Le branchement à quai', concept:'Interfaces et parties prenantes',
+    ctx:'Le ferry passe plusieurs heures par jour à quai, groupes électrogènes allumés, en pleine ville.',
+    opts:[
+      {t:'Équiper le navire pour l\'alimentation électrique à quai, en coordonnant le calendrier avec les deux ports.',e:{b:-6,d:-3,q:5,s:20},best:true,fb:'Le branchement à quai supprime les émissions et le bruit au port. FuelEU le rendra obligatoire à partir de 2030 pour les navires à passagers dans les grands ports européens. Mais il faut que le navire et le quai soient prêts en même temps : c\'est une interface clé du projet.'},
+      {t:'Attendre que les ports s\'équipent avant de faire quoi que ce soit.',e:{b:0,d:-10,q:0,s:-5},fb:'Si chacun attend l\'autre, rien n\'avance. Un projet d\'interface se mène à deux, avec un calendrier commun.'},
+      {t:'Garder les groupes électrogènes à quai.',e:{b:3,d:0,q:0,s:-20},fb:'Les riverains respirent les fumées, et le navire perdra bientôt l\'accès à certains ports.'}]},
+  { title:'L\'arrêt technique', concept:'Planification d\'un arrêt',
+    ctx:'Les travaux doivent se faire pendant l\'arrêt technique de 3 semaines en cale sèche. Chaque jour de plus coûte une journée d\'exploitation perdue.',
+    opts:[
+      {t:'Préparer l\'arrêt des mois à l\'avance : équipements livrés avant, planning heure par heure, solutions de repli.',e:{b:-3,d:15,q:10,s:5},best:true,fb:'Un arrêt technique est un projet court où tout est sur le chemin critique. La préparation fait la différence : tout ce qui peut être fait avant l\'arrêt doit l\'être.'},
+      {t:'Ajouter les travaux au fur et à mesure, pendant l\'arrêt.',e:{b:-10,d:-15,q:-5,s:0},fb:'Les ajouts de dernière minute font déborder l\'arrêt. Chaque jour de retard, c\'est une rotation du ferry annulée et des passagers à réacheminer.'},
+      {t:'Faire une partie des travaux en exploitation, avec des passagers à bord.',e:{b:3,d:5,q:-10,s:-20},fb:'Travaux à chaud, coupures électriques, accès limités : c\'est un risque inacceptable avec des passagers à bord.'}]},
+  { title:'L\'équipage', concept:'Conduite du changement',
+    ctx:'Les nouveaux systèmes changent les habitudes des officiers et des mécaniciens.',
+    opts:[
+      {t:'Impliquer le chef mécanicien dès la conception et former tout l\'équipage avant la remise en service.',e:{b:-2,d:0,q:10,s:15},best:true,fb:'Une technologie mal maîtrisée par ceux qui l\'utilisent ne donne jamais les gains promis. Impliquer les utilisateurs tôt améliore aussi la conception.'},
+      {t:'Laisser le manuel du fabricant à bord.',e:{b:2,d:0,q:-10,s:-10},fb:'Un manuel ne remplace pas une formation. Les premières semaines d\'exploitation risquent d\'être chaotiques, voire dangereuses.'},
+      {t:'Recruter un nouvel équipage déjà formé.',e:{b:-10,d:-5,q:0,s:0},fb:'Coûteux et lent, et on perd l\'expérience précieuse de l\'équipage actuel sur ce navire et cette ligne.'}]},
   ]},
 ];
 const G=[['b','💶 Budget'],['d','⏱️ Délai'],['q','✅ Qualité'],['s','🛡️ Sécurité & environnement']];
@@ -188,9 +238,9 @@ let S=null; // partie en cours
 function home(){
   const best=store.get('mpm_best',{});
   app.innerHTML=`<h1>MS <b>MPM</b> · Formation</h1>
-  <div class="sub">Un serious game de management de projets maritimes. Six décisions par projet, et pour chacune une explication. À jouer seul, ou en groupe en discutant avant chaque choix.</div>
+  <div class="sub">Un serious game de management de projets maritimes. Quatre projets, six décisions par projet, et pour chacune une explication. À jouer seul, ou en groupe en discutant avant chaque choix.</div>
   <div class="scen">${SCENARIOS.map((s,i)=>`<button data-s="${i}"><div class="ic">${s.icon}</div><div class="tt">${esc(s.title)}</div>${esc(s.pitch)}${best[s.id]!=null?`<div class="best">Meilleur score : ${best[s.id]}/100</div>`:''}</button>`).join('')}</div>
-  <div class="card"><b>Comment ça marche ?</b><div class="tip" style="font-size:14px;line-height:1.55">Quatre indicateurs partent à 70 : budget, délai, qualité, sécurité et environnement. Chaque décision les fait monter ou baisser. Il n'y a pas toujours de choix parfait, mais il y a toujours une bonne pratique. À la fin, un débriefing reprend chaque décision et la notion de management de projet qu'elle illustre.</div></div>`;
+  <div class="card"><b>Comment ça marche ?</b><div class="tip" style="font-size:14px;line-height:1.55">Quatre indicateurs partent à 70 : budget, délai, qualité, sécurité et environnement. Chaque décision les fait monter ou baisser. Il n'y a pas toujours de choix parfait, mais il y a toujours une bonne pratique. À la fin, un débriefing reprend chaque décision et la notion de management de projet qu'elle illustre.</div></div><details class="glo"><summary>📖 Glossaire des notions</summary><dl><dt>Chemin critique</dt><dd>Suite des tâches qui détermine la durée totale du projet. Un retard sur l\'une d\'elles retarde la livraison ; les autres tâches ont de la marge.</dd><dt>Équipement à long délai</dt><dd>Matériel dont la fabrication est longue (moteur, hélice, grues). On le commande très tôt car il est souvent sur le chemin critique.</dd><dt>Valeur acquise (EVM)</dt><dd>Méthode qui compare le travail prévu (PV), le travail réalisé (EV) et le coût réel (AC). CPI = EV/AC mesure l\'efficacité des coûts, SPI = EV/PV celle du planning.</dd><dt>Société de classification</dt><dd>Organisme qui établit des règles techniques de construction et vérifie que le navire les respecte. Son certificat est indispensable pour assurer et exploiter le navire.</dd><dt>MARPOL</dt><dd>Convention de l\'OMI contre la pollution par les navires. Son annexe VI limite les émissions dans l\'air : soufre, oxydes d\'azote, efficacité énergétique.</dd><dt>Zone ECA</dt><dd>Zone de contrôle des émissions, comme la Manche et la mer du Nord, où la teneur en soufre du carburant est limitée à 0,10 % (contre 0,50 % ailleurs).</dd><dt>EEXI</dt><dd>Indice d\'efficacité énergétique des navires existants, obligatoire depuis 2023. Il porte sur la conception du navire.</dd><dt>CII</dt><dd>Indicateur d\'intensité carbone en exploitation, noté chaque année de A à E.</dd><dt>EU ETS</dt><dd>Système européen d\'échange de quotas d\'émission. Il couvre le transport maritime depuis 2024 : les compagnies paient pour leurs émissions de CO₂.</dd><dt>FuelEU Maritime</dt><dd>Règlement européen en vigueur depuis 2025 qui impose de réduire progressivement l\'intensité en gaz à effet de serre de l\'énergie utilisée à bord.</dd><dt>Code ISPS</dt><dd>Code international de sûreté des navires et des installations portuaires, adopté par l\'OMI après 2001.</dd><dt>Étude d\'impact</dt><dd>Analyse des effets d\'un projet sur l\'environnement, exigée avant l\'autorisation de grands travaux, notamment sur le littoral.</dd><dt>Parties prenantes</dt><dd>Toutes les personnes et organisations concernées par le projet : client, riverains, pêcheurs, autorités, salariés…</dd><dt>Fenêtre météo</dt><dd>Période où la houle et le vent permettent de travailler en mer en sécurité.</dd><dt>EVP</dt><dd>Équivalent vingt pieds : unité de mesure de la capacité des porte-conteneurs (TEU en anglais).</dd></dl></details>`;
   app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>start(+b.dataset.s));
 }
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
