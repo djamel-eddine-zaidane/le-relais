@@ -1,0 +1,16 @@
+{
+  "name": "le-relais",
+  "version": "1.0.0",
+  "description": "Un jeu où une seule personne au monde joue à la fois. Tout le monde regarde.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "license": "MIT"
+}
