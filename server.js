@@ -1,4 +1,4 @@
-// Le Relais — serveur multijoueur
+// MS MPM — serveur multijoueur
 // Une seule personne au monde joue à la fois. Tout le monde regarde.
 const http = require('http');
 const fs = require('fs');
@@ -193,4 +193,4 @@ setInterval(() => {
   broadcast({ t: 'viewers', n: clients.size });
 }, 5000);
 
-server.listen(PORT, () => console.log(`Le Relais tourne sur http://localhost:${PORT} — niveau ${world.level}`));
+server.listen(PORT, () => console.log(`MS MPM tourne sur http://localhost:${PORT} — niveau ${world.level}`));

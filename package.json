@@ -1,5 +1,5 @@
 {
-  "name": "le-relais",
+  "name": "ms-mpm",
   "version": "1.0.0",
   "description": "Un jeu où une seule personne au monde joue à la fois. Tout le monde regarde.",
   "main": "server.js",

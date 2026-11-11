@@ -1,4 +1,4 @@
-# Le Relais
+# MS MPM
 
 Une seule personne au monde joue à la fois. Tout le monde regarde.
 Chacun a 60 secondes pour faire avancer le personnage, puis passe la main.
